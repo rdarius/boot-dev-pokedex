@@ -26,7 +26,7 @@ var commands map[string]cliCommand
 
 func main() {
 
-	pokeClient := pokeapi.NewClient(5 * time.Second)
+	pokeClient := pokeapi.NewClient(5*time.Second, time.Minute*5)
 	cfg := &config{
 		pokeapiClient: pokeClient,
 	}
@@ -84,15 +84,9 @@ func commandExit(*config) error {
 }
 
 func cleanInput(text string) []string {
-	// trim input string
-	text = strings.TrimSpace(text)
-	// convert to lowercase
-	text = strings.ToLower(text)
-	// replace all double spaces into single space
-	text = strings.Replace(text, "  ", " ", -1)
-	// split by space
-	separated := strings.Split(text, " ")
-	return separated
+	output := strings.ToLower(text)
+	words := strings.Fields(output)
+	return words
 }
 
 func printHelpMessage(*config) error {
