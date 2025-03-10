@@ -65,6 +65,16 @@ func main() {
 			description: "Attempt to catch a pokemon",
 			callback:    commandCatch,
 		},
+		"inspect": {
+			name:        "inspect <pokemon_name>",
+			description: "View details about a caught Pokemon",
+			callback:    commandInspect,
+		},
+		"pokedex": {
+			name:        "pokedex",
+			description: "View list of pokemons caught",
+			callback:    commandPokedex,
+		},
 	}
 	for {
 		// read user input
@@ -186,5 +196,39 @@ func commandCatch(cfg *config, args ...string) error {
 	fmt.Printf("%s was caught!\n", pokemon.Name)
 
 	cfg.caughtPokemon[pokemon.Name] = pokemon
+	return nil
+}
+
+func commandInspect(cfg *config, args ...string) error {
+	if len(args) != 1 {
+		return errors.New("you must provide a pokemon name")
+	}
+
+	name := args[0]
+	pokemon, ok := cfg.caughtPokemon[name]
+	if !ok {
+		return errors.New("you have not caught that pokemon")
+	}
+
+	fmt.Println("Name:", pokemon.Name)
+	fmt.Println("Height:", pokemon.Height)
+	fmt.Println("Weight:", pokemon.Weight)
+	fmt.Println("Stats:")
+	for _, stat := range pokemon.Stats {
+		fmt.Printf("  -%s: %v\n", stat.Stat.Name, stat.BaseStat)
+	}
+	fmt.Println("Types:")
+	for _, typeInfo := range pokemon.Types {
+		fmt.Println("  -", typeInfo.Type.Name)
+	}
+	return nil
+}
+
+func commandPokedex(cfg *config, _ ...string) error {
+
+	for name := range cfg.caughtPokemon {
+		fmt.Println(cfg.caughtPokemon[name].Name)
+	}
+
 	return nil
 }
